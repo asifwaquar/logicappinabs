@@ -1,0 +1,74 @@
+{        "parameters": {
+        "$connections": {
+        "value": {
+            "blockchainethereum": {
+                "connectionId": "/subscriptions/014cae1c-b4b3-42c4-a160-06fb0f77eea8/resourceGroups/",
+                "connectionName": "",
+                "id": "/subscriptions/014cae1c-b4b3-42c4-a160-06fb0f77eea8/providers/Microsoft.Web/locations/westeurope/managedApis/blockchainethereum"
+            }
+        }
+        }
+    },
+                        "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+                "$connections": {
+                    "defaultValue": {
+                    },
+            "type": "Object"
+        }
+            },
+                       "triggers": {
+        "manual": {
+                "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                    "schema": {
+                        "properties": { 
+"requestMessage": { "type": "string" }                        },
+                    "type": "object"
+                    }
+    }
+}
+        },
+
+                           "actions": {
+        "Call smart contract function": {
+                "runAfter": { },
+            "type": "ApiConnection",
+            "inputs": {
+                    "body": {
+"requestMessage": "@triggerBody()?['requestMessage']"
+                    },
+                "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['blockchainethereum']['connectionId']"
+                        }
+                    },
+                "method": "post",
+                "path": "/contract/functions/@{encodeURIComponent(encodeURIComponent('SendRequest'))}/execute",
+                "queries": {
+                        "abi": "[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"message\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"stateData\",\"type\":\"string\"}],\"name\":\"StateChanged\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"RequestMessage\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"Requestor\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"Responder\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"ResponseMessage\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"State\",\"outputs\":[{\"internalType\":\"enum HelloBlockchain.StateType\",\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"requestMessage\",\"type\":\"string\"}],\"name\":\"SendRequest\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"responseMessage\",\"type\":\"string\"}],\"name\":\"SendResponse\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+
+                        "contractAddress": "0xAfE169F343C19922973426eF485120E0d7575Ced"
+                }
+                }
+            },
+                              "Response": {
+            "runAfter": {
+                "Call smart contract function": [
+                    "Succeeded"
+                ]
+    },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "body": "@body('Call smart contract function')",
+                "statusCode": 200
+            }
+        }
+    },
+                          "outputs": {}
+    }
+}
